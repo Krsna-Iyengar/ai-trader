@@ -1,5 +1,6 @@
 const express = require('express');
 const app = express();
+const { spawn } = require('child_process');
 const jwt = require('jsonwebtoken');
 const port = process.env.PORT || 5000;
 const marketDataRoute = require('./routes/marketData');
@@ -7,6 +8,24 @@ const bcrypt = require('bcryptjs');
 const cors = require('cors');
 require('dotenv').config();
 const { Pool } = require('pg');  // Import the PostgreSQL client
+
+// Fallback route to fetch data from yfinance
+app.get('/api/fallback/stock/:symbol', (req, res) => {
+  const symbol = req.params.symbol;
+
+  // Call Python script using spawn
+  const pythonProcess = spawn('python3', ['get_stock_data.py', symbol]);
+
+  pythonProcess.stdout.on('data', (data) => {
+    const stockData = data.toString();
+    res.json(JSON.parse(stockData));
+  });
+
+  pythonProcess.stderr.on('data', (data) => {
+    console.error(`Error: ${data}`);
+    res.status(500).send('Error fetching stock data');
+  });
+});
 
 // Configure PostgreSQL connection pool
 const pool = new Pool({

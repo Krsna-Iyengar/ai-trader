@@ -3,25 +3,9 @@ import { Link } from 'react-router-dom';
 import logo from './assets/ai-trader.jpg';  // Add your logo image path
 
 
-function Header({ isLoggedIn, handleLogout }) {
-    const [isDarkMode, setIsDarkMode] = useState(() => {
-        return localStorage.getItem('dark-mode') === 'true';
-      });
-    
-      useEffect(() => {
-        if (isDarkMode) {
-          document.body.classList.add('dark-mode');
-        } else {
-          document.body.classList.remove('dark-mode');
-        }
-      }, [isDarkMode]);
-    
-      const toggleDarkMode = () => {
-        setIsDarkMode(!isDarkMode);
-        localStorage.setItem('dark-mode', !isDarkMode);
-      }
+function Header({ isLoggedIn, handleLogout, darkMode, toggleDarkMode }) {
   return (
-    <header className={`navbar navbar-expand-lg ${isDarkMode ? 'dark-mode' : ''}`}>
+    <header className={`navbar navbar-expand-lg ${darkMode ? 'dark-mode' : ''}`}>
         <div className="container-fluid d-flex justify-content-between align-items-center">
           <Link to="/" className="navbar-brand align-items-center">
           <img src={logo} alt="AI Trader" width="50" height="50" className="logo"/>
@@ -29,8 +13,9 @@ function Header({ isLoggedIn, handleLogout }) {
           </Link>
           <div className="header-buttons">
 
-            <button className="btn btn-outline-dark" onClick={toggleDarkMode}>
-              {isDarkMode ? 'Light Mode' : 'Dark Mode'}
+            <button className="btn btn-outline-light" onClick={toggleDarkMode}>
+              Switch to {darkMode ? 'Light' : 'Dark'} Mode
+              {/*{isDarkMode ? 'Light Mode' : 'Dark Mode'}*/}
             </button>
           
             {!isLoggedIn ? (

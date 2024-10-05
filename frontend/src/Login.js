@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
-function Login({ setIsLoggedIn }) {
+function Login({ setIsLoggedIn, darkMode }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
@@ -23,7 +23,7 @@ function Login({ setIsLoggedIn }) {
        // If successful, store the token and redirect to dashboard
        localStorage.setItem('token', response.data.token);
        setIsLoggedIn(true);  // Update login state
-       navigate('/');  // Redirect to dashboard after login
+       navigate('/dashboard');  // Redirect to dashboard after login
      } catch (error) {
        // Handle error (e.g., invalid credentials)
        setErrorMessage(error.response?.data?.message || 'Login failed');
@@ -31,7 +31,7 @@ function Login({ setIsLoggedIn }) {
     };
 
   return (
-    <div className="sign-up-container mt-5">
+    <div className={`sign-up-container mt-5 ${darkMode ? 'dark-mode' : ''}`}>
       <h2 className="text-center mb-4">Login</h2>
       {errorMessage && <div className="alert alert-danger">{errorMessage}</div>}
       <form onSubmit={handleSubmit} className="p-4 border rounded shadow">

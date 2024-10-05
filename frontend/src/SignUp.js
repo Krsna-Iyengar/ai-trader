@@ -18,14 +18,8 @@ const firebaseConfig = {
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
 
-function SignUp() {
+function SignUp({ darkMode }) {
     const navigate = useNavigate();  // Initialize the navigate function
-    const [isDarkMode, setIsDarkMode] = useState(false);  // State for dark mode
-
-    const toggleDarkMode = () => {
-      setIsDarkMode(!isDarkMode);  // Toggle dark mode
-    };
-  
     const [successMessage, setSuccessMessage] = useState('');
 
   const [formData, setFormData] = useState({
@@ -122,7 +116,7 @@ const handleSubmit = async (e) => {
       };
 
   return (
-    <div className={`sign-up-container mt-5 ${isDarkMode ? 'dark-mode' : ''}` }>
+    <div className={`sign-up-container mt-5 ${darkMode ? 'dark-mode' : ''}` }>
       <h2 className="text-center mb-4">Create Your Account</h2>
       {successMessage && <div className="alert alert-success">{successMessage}</div>}
       <form onSubmit={handleSubmit} className="p-4 border rounded shadow">

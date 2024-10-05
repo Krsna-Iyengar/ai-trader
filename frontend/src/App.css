@@ -44,6 +44,10 @@ body, html {
   font-family: 'Roboto', sans-serif;
 }
 
+body.dark-mode {
+  background: #000000;
+}
+
 .hero-section {
   height: 80vh;
   background: linear-gradient(to right, #007bff, #6610f2);
@@ -55,9 +59,14 @@ body, html {
   margin-bottom: 20px;
 }
 
+.hero-section.dark-mode {
+  background: linear-gradient(to right, #444444, #222222);
+}
+
 .features-section {
   padding: 50px 0;
 }
+
 
 .footer {
   padding: 20px;
@@ -123,12 +132,9 @@ body.dark-mode {
 }
 
 .navbar.dark-mode {
-  background-color: #333333;
+  background-color: #050505;
 }
 
-.hero-section.dark-mode {
-  background: linear-gradient(to right, #444444, #222222);
-}
 
 .btn-outline-light {
   color: #000000;
@@ -183,4 +189,87 @@ body.dark-mode {
 .text-danger {
   color: #dc3545; /* Bootstrap-style error color */
   font-size: 0.875rem;
+}
+
+.dashboard-container {
+  padding: 20px;
+  background-color: #f8f9fa;
+}
+
+.dashboard-container h1, h2 {
+  margin-bottom: 20px;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+li {
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 4px;
+}
+
+/* Light mode styles (default) */
+.dashboard-container {
+  background-color: #fff;
+  color: #000;
+}
+
+button {
+  padding: 10px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+/* Dark mode styles */
+.dashboard-container.dark-mode {
+  background-color: #333;
+  color: #fff;
+}
+
+.dashboard-container.dark-mode button {
+  background-color: #444;
+  color: #ddd;
+}
+
+.dashboard-container.dark-mode button:hover {
+  background-color: #555;
+}
+
+/* Customize chart colors for dark mode */
+.dashboard-container.dark-mode .recharts-wrapper {
+  background-color: #333;
+  border: 1px solid #555;
+}
+
+.recharts-cartesian-axis-tick-value {
+  fill: #000000;
+}
+
+.dashboard-container.dark-mode .recharts-wrapper {
+  background-color: #333;
+  border: 1px solid #555;
+}
+
+.recharts-cartesian-axis-tick-value.dark-mode {
+  fill: #fff; /* Axis labels color */
+}
+
+.recharts-legend-item-text {
+  fill: #000000; /* Legend text color */
+}
+
+.recharts-legend-item-text.dark-mode {
+  fill: #ffffff; /* Legend text color */
 }
