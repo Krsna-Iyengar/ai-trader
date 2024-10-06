@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const { spawn } = require('child_process');
 const jwt = require('jsonwebtoken');
+const path = require('path');
 const port = process.env.PORT || 5000;
 const marketDataRoute = require('./routes/marketData');
 const bcrypt = require('bcryptjs');
@@ -9,22 +10,77 @@ const cors = require('cors');
 require('dotenv').config();
 const { Pool } = require('pg');  // Import the PostgreSQL client
 
-// Fallback route to fetch data from yfinance
-app.get('/api/fallback/stock/:symbol', (req, res) => {
-  const symbol = req.params.symbol;
+// Serve static files from the 'uploads' directory
+app.use('/uploads', express.static('uploads'));
 
-  // Call Python script using spawn
-  const pythonProcess = spawn('python3', ['get_stock_data.py', symbol]);
+// Middleware
+app.use(express.json());
 
-  pythonProcess.stdout.on('data', (data) => {
-    const stockData = data.toString();
-    res.json(JSON.parse(stockData));
-  });
+// Allow requests from frontend origin (http://localhost:3000)
+app.use(cors({
+  origin: 'http://localhost:3000',
+  credentials: true, // Include credentials if needed, such as cookies or Authorization headers
+}));
 
-  pythonProcess.stderr.on('data', (data) => {
-    console.error(`Error: ${data}`);
-    res.status(500).send('Error fetching stock data');
-  });
+const multer = require('multer');
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/');
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${Date.now()}-${file.originalname}`);
+  },
+});
+const upload1 = multer({ storage });
+
+const verifyToken = (req, res, next) => {
+  const authHeader = req.headers['authorization'];
+  if (!authHeader) {
+    return res.status(401).json({ message: 'No token provided' });
+  }
+
+  const token = authHeader.split(' ')[1];
+  if (!token) {
+    return res.status(401).json({ message: 'No token provided' });
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.userId = decoded.id; // Use 'id' instead of 'userId'
+    next();
+    
+  } catch (err) {
+    return res.status(403).json({ message: 'Invalid token' });
+  }
+};
+
+
+// Use `upload1` in routes
+app.post('/api/users/me/profile-pic', verifyToken, upload1.single('profilePic'), async (req, res) => {
+  try {
+    if (!req.file) {
+      console.error('No file received');
+      return res.status(400).json({ message: 'No file received' });
+    }
+    
+    const userId = req.userId;
+    const profilePicPath = `/uploads/${req.file.filename}`;
+    console.log('Updating profile picture path in DB:', profilePicPath);
+
+    const result = await pool.query(
+      'UPDATE users SET profile_pic = $1 WHERE id = $2 RETURNING *',
+      [profilePicPath, userId]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.status(200).json(result.rows[0]);
+  } catch (err) {
+    console.error('Error uploading profile picture:', err);
+    res.status(500).json({ message: 'Server error' });
+  }
 });
 
 // Configure PostgreSQL connection pool
@@ -36,16 +92,6 @@ const pool = new Pool({
   port: process.env.DB_PORT,       // Port (5432 is the default for PostgreSQL)
 });
 
-//multer
-const multer = require('multer');
-const upload = multer({ dest: 'uploads/' });
-
-// Middleware
-app.use(express.json());
-app.use(cors());
-
-// Mock database (replace this with a real database like MongoDB, MySQL, etc.)
-let users = [];
 
 // Sample route to test the database connection
 app.get('/api/test-db', async (req, res) => {
@@ -114,21 +160,66 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
-app.post('/upload', upload.single('file'), (req, res) => {
+app.post('/upload', upload1.single('file'), (req, res) => {
   res.send('File uploaded successfully');
 });
 
+app.get('/api/users/me', verifyToken, async (req, res) => {
+  try {
+    const userId = parseInt(req.userId, 10);
+    console.log('Attempting to find user with id:', userId);
 
-//multer
+    const user = await pool.query('SELECT id, name, email, profile_pic, bio FROM users WHERE id = $1', [userId]);
 
-app.use(express.json());
+    if (user.rows.length === 0) {
+      console.log('User not found with id:', userId);
+      return res.status(404).json({ message: 'User not found' });
+    }
 
-// Use the market data route
-app.use('/api', marketDataRoute);
-
-app.get('/api/users', (req, res) => {
-  res.json(users);  // Sends the users array as a JSON response
+    res.status(200).json(user.rows[0]);
+  } catch (err) {
+    console.error('Error fetching user:', err);
+    res.status(500).json({ message: 'Server error' });
+  }
 });
+
+app.put('/api/users/me', verifyToken, async (req, res) => {
+  try {
+    const userId = req.userId; // Extracted from verifyToken middleware
+    const { name, email, profilePic, bio, password } = req.body;
+
+    let query = `
+      UPDATE users SET 
+        name = $1, 
+        email = $2, 
+        profile_pic = $3, 
+        bio = $4
+    `;
+    const queryValues = [name, email, profilePic, bio];
+
+    // If password is provided, update it as well
+    if (password) {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      query += `, password = $5 WHERE id = $6 RETURNING *`;
+      queryValues.push(hashedPassword, userId);
+    } else {
+      query += ` WHERE id = $5 RETURNING *`;
+      queryValues.push(userId);
+    }
+
+    const result = await pool.query(query, queryValues);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.status(200).json(result.rows[0]);
+  } catch (err) {
+    console.error('Error updating user:', err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 
 app.get('/', (req, res) => {
   res.send('AI Trader API is running');

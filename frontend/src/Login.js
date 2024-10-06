@@ -10,25 +10,24 @@ function Login({ setIsLoggedIn, darkMode }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle login logic here (e.g., POST request to backend)
     try {
-        const response = await axios.post('http://localhost:5000/api/login', {
-          email,
-          password,
-        });
-        
-        console.log('Login response:', response.data);  // Log the response to debug
-
+      const response = await axios.post('http://localhost:5000/api/login', {
+        email,
+        password,
+      });
   
-       // If successful, store the token and redirect to dashboard
-       localStorage.setItem('token', response.data.token);
-       setIsLoggedIn(true);  // Update login state
-       navigate('/dashboard');  // Redirect to dashboard after login
-     } catch (error) {
-       // Handle error (e.g., invalid credentials)
-       setErrorMessage(error.response?.data?.message || 'Login failed');
-     }
-    };
+      if (response.data) {
+        const { token, user } = response.data;
+        localStorage.setItem('token', token);
+        localStorage.setItem('userData', JSON.stringify(user));
+        setIsLoggedIn(true);
+        navigate('/dashboard');
+      }
+    } catch (error) {
+      setErrorMessage(error.response?.data?.message || 'Login failed');
+    }
+  };
+  
 
   return (
     <div className={`sign-up-container mt-5 ${darkMode ? 'dark-mode' : ''}`}>

@@ -1,5 +1,10 @@
 .App {
   text-align: center;
+  background-color: rgb(255, 255, 255);
+}
+
+.App.dark-mode {
+  background-color: black;
 }
 
 .App-logo {
@@ -14,15 +19,12 @@
 }
 
 .App-header {
-  
-  background-color: #282c34;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: left;
   justify-content: left;
   font-size: calc(10px + 2vmin);
-  color: rgb(36, 68, 94);
 }
 
 .App-link {
@@ -132,7 +134,7 @@ body.dark-mode {
 }
 
 .navbar.dark-mode {
-  background-color: #050505;
+  background: linear-gradient(to right, #211f25, #000000);
 }
 
 
@@ -142,18 +144,19 @@ body.dark-mode {
 }
 
 .btn-outline-light:hover {
-  background-color: #dddada;
+  background-color: #d6d8e7;
   color: #0a0a0a;
 }
 /* Light Mode (default) for the sign-up container */
 .sign-up-container {
   max-width: 400px;
-  background-color: #f9f9f9;
+  background-color: #cbccd6bd;
   color: #000;
   padding: 30px;
   border-radius: 10px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
   margin: 0 auto;
+  margin-bottom: 50px;
 }
 
 .sign-up-container input {
@@ -238,6 +241,7 @@ button:hover {
   color: #fff;
 }
 
+
 .dashboard-container.dark-mode button {
   background-color: #444;
   color: #ddd;
@@ -273,3 +277,18 @@ button:hover {
 .recharts-legend-item-text.dark-mode {
   fill: #ffffff; /* Legend text color */
 }
+
+/*dropdown*/
+.dropdown-menu {
+  background-color: #282c34;
+  color: #fff;
+}
+
+.dropdown-item {
+  color: #fff;
+}
+
+.dropdown-item:hover {
+  background-color: #444;
+}
+

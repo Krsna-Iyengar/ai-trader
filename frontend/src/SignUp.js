@@ -3,7 +3,6 @@ import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 import { initializeApp } from 'firebase/app';
 import axios from 'axios';  // Import Axios for HTTP requests
-import Login from './Login';
 
 const firebaseConfig = {
     
