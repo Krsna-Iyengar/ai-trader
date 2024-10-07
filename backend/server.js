@@ -1,5 +1,6 @@
 const express = require('express');
 const app = express();
+const axios = require('axios');
 const { spawn } = require('child_process');
 const jwt = require('jsonwebtoken');
 const path = require('path');
@@ -10,8 +11,11 @@ const cors = require('cors');
 require('dotenv').config();
 const { Pool } = require('pg');  // Import the PostgreSQL client
 
+console.log(typeof process.env.DB_PASSWORD); // Should be 'string'
+
+
 // Serve static files from the 'uploads' directory
-app.use('/uploads', express.static('uploads'));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Middleware
 app.use(express.json());
@@ -21,6 +25,44 @@ app.use(cors({
   origin: 'http://localhost:3000',
   credentials: true, // Include credentials if needed, such as cookies or Authorization headers
 }));
+
+// Route to fetch stock data from Alpha Vantage
+app.get('/api/stock/:symbol', async (req, res) => {
+  const symbol = req.params.symbol;
+
+  try {
+    // Make request to Alpha Vantage
+    const response = await axios.get(`https://www.alphavantage.co/query`, {
+      params: {
+        function: 'GLOBAL_QUOTE',
+        symbol: symbol,
+        apikey: "CMZTXK62SKTEINS0",
+      },
+    });
+
+    // Extract stock data from the response
+    const stockData = response.data['Global Quote'];
+
+    if (stockData && stockData['01. symbol']) {
+      res.json({
+        symbol: stockData['01. symbol'],
+        price: stockData['05. price'],
+        volume: stockData['06. volume'],
+        open: stockData['02. open'],
+        high: stockData['03. high'],
+        low: stockData['04. low'],
+        previousClose: stockData['08. previous close'],
+        change: stockData['09. change'],
+        changePercent: stockData['10. change percent'],
+      });
+    } else {
+      res.status(404).json({ error: 'Stock data not found' });
+    }
+  } catch (error) {
+    console.error('Error fetching stock data from Alpha Vantage:', error.message);
+    res.status(500).json({ error: 'Error fetching stock data' });
+  }
+});
 
 const multer = require('multer');
 const storage = multer.diskStorage({

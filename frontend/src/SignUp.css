@@ -1,0 +1,121 @@
+/* Sign-Up Form Container */
+.sign-up-container {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Dark Mode Styling */
+  .sign-up-container.dark-mode {
+    background-color: #1a1a2e;
+    color: #e0e0e0;
+  }
+  
+  /* Form Heading */
+  .sign-up-container h2 {
+    text-align: center;
+    color: #007bff;
+  }
+  
+  .sign-up-container.dark-mode h2 {
+    color: #00d4ff;
+  }
+  
+  /* Form Fields */
+  .sign-up-container .form-group label {
+    color: #343a40;
+    font-weight: bold;
+  }
+  
+  .sign-up-container.dark-mode .form-group label {
+    color: #e0e0e0;
+  }
+  
+  .sign-up-container .form-control {
+    border: 1px solid #ced4da;
+    border-radius: 8px;
+    padding: 10px;
+    background-color: #fff;
+    color: #495057;
+    box-shadow: none;
+    transition: all 0.3s ease;
+  }
+  
+  .sign-up-container.dark-mode .form-control {
+    background-color: #0f3460;
+    color: #e0e0e0;
+    border: 1px solid #007bff;
+  }
+  
+  .sign-up-container .form-control:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+  }
+  
+  .sign-up-container.dark-mode .form-control:focus {
+    border-color: #00d4ff;
+    box-shadow: 0 0 5px rgba(0, 212, 255, 0.5);
+  }
+  
+  /* Error Messages */
+  .sign-up-container .text-danger {
+    color: #dc3545;
+  }
+  
+  .sign-up-container.dark-mode .text-danger {
+    color: #ff4d4d;
+  }
+  
+  /* Success Message */
+  .sign-up-container .alert-success {
+    background-color: #28a745;
+    color: white;
+  }
+  
+  .sign-up-container.dark-mode .alert-success {
+    background-color: #2ecc71;
+    color: #1a1a2e;
+  }
+  
+  /* Submit Button */
+  .sign-up-container .btn-primary {
+    background-color: #007bff;
+    color: white;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 8px;
+    width: 100%;
+    border: none;
+    transition: all 0.3s ease;
+  }
+  
+  .sign-up-container .btn-primary:hover {
+    background-color: #0056b3;
+  }
+  
+  .sign-up-container.dark-mode .btn-primary {
+    background-color: #00d4ff;
+    color: white;
+  }
+  
+  .sign-up-container.dark-mode .btn-primary:hover {
+    background-color: #00aaff;
+  }
+  
+  /* Input Placeholder Styling */
+  .sign-up-container .form-control::placeholder {
+    color: #6c757d;
+  }
+  
+  .sign-up-container.dark-mode .form-control::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+  }
+  
+  /* Rounded Form */
+  .sign-up-container .form-group {
+    margin-bottom: 15px;
+  }
+  

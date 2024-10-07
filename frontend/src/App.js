@@ -6,6 +6,8 @@ import Header from './Header.js';
 import ProtectedRoute from './ProtectedRoute';
 import Dashboard from './Dashboard';
 import Account from './Account';  
+import Advisor from './Advisor.js';
+import Game from './Game.js'
 import './App.css';  // Custom CSS
 
 function App() {
@@ -42,6 +44,8 @@ function App() {
           <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} darkMode={darkMode}/>} />
           <Route path="/dashboard" element={<ProtectedRoute><Dashboard darkMode={darkMode}/></ProtectedRoute>} />
           <Route path="/account" element={<ProtectedRoute><Account darkMode={darkMode}/></ProtectedRoute>} />
+          <Route path="/advisor" element={<ProtectedRoute><Advisor darkMode={darkMode}/></ProtectedRoute>} />
+          <Route path="/game" element={<ProtectedRoute><Game darkMode={darkMode}/></ProtectedRoute>} />
         </Routes>
 
           {/* Hero Section */}

@@ -56,6 +56,14 @@
     margin-top: 10px !important;
   }
   
+  .profile-pic {
+    width: 150px; /* Adjust the width as necessary */
+    height: 150px; /* Adjust the height as necessary */
+    border-radius: 50%; /* Make it circular if needed */
+    object-fit: cover; /* Ensure the image fits within the box */
+    margin-top: 10px;
+  }
+  
   .profile-pic-preview {
     width: 100px;
     height: 100px;

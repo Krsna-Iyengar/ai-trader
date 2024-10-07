@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 import { initializeApp } from 'firebase/app';
 import axios from 'axios';  // Import Axios for HTTP requests
+import './SignUp.css';
 
 const firebaseConfig = {
+  
     
     apiKey: "YOUR_API_KEY",
     authDomain: "YOUR_AUTH_DOMAIN",
@@ -18,6 +20,49 @@ const firebaseConfig = {
   const auth = getAuth(app);
 
 function SignUp({ darkMode }) {
+  const [isDragging, setIsDragging] = useState(false);
+  const containerRef = useRef(null);
+  const [position, setPosition] = useState({ top: 0, left: 0 });
+  const [offset, setOffset] = useState({ x: 0, y: 0 });
+
+  // Center the container on the screen when it first loads
+  useEffect(() => {
+    const container = containerRef.current;
+    const screenWidth = window.innerWidth;
+    const screenHeight = window.innerHeight;
+
+    const containerWidth = container.offsetWidth;
+    const containerHeight = container.offsetHeight;
+
+    // Calculate center position
+    const top = (screenHeight - containerHeight) / 2;
+    const left = (screenWidth - containerWidth) / 2;
+
+    // Set the initial position
+    setPosition({ top, left });
+  }, []);
+
+  const handleMouseDown = (e) => {
+    const container = containerRef.current;
+    setIsDragging(true);
+    setOffset({
+      x: e.clientX - container.offsetLeft,
+      y: e.clientY - container.offsetTop,
+    });
+  };
+
+  const handleMouseMove = (e) => {
+    if (!isDragging) return;
+    setPosition({
+      top: e.clientY - offset.y,
+      left: e.clientX - offset.x,
+    });
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+  
     const navigate = useNavigate();  // Initialize the navigate function
     const [successMessage, setSuccessMessage] = useState('');
 
@@ -115,7 +160,19 @@ const handleSubmit = async (e) => {
       };
 
   return (
-    <div className={`sign-up-container mt-5 ${darkMode ? 'dark-mode' : ''}` }>
+    <div className={`sign-up-container mt-5 ${darkMode ? 'dark-mode' : ''}` }
+      ref={containerRef}
+      style={{
+        position: 'absolute',
+        top: `${position.top}px`,
+        left: `${position.left}px`,
+        cursor: isDragging ? 'grabbing' : 'grab',
+      }}
+      onMouseDown={handleMouseDown}
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
+      onMouseLeave={handleMouseUp}
+    >
       <h2 className="text-center mb-4">Create Your Account</h2>
       {successMessage && <div className="alert alert-success">{successMessage}</div>}
       <form onSubmit={handleSubmit} className="p-4 border rounded shadow">

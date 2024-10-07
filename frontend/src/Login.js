@@ -1,8 +1,51 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 function Login({ setIsLoggedIn, darkMode }) {
+  const [isDragging, setIsDragging] = useState(false);
+  const containerRef = useRef(null);
+  const [position, setPosition] = useState({ top: 0, left: 0 });
+  const [offset, setOffset] = useState({ x: 0, y: 0 });
+
+  // Center the container on the screen when it first loads
+  useEffect(() => {
+    const container = containerRef.current;
+    const screenWidth = window.innerWidth;
+    const screenHeight = window.innerHeight;
+
+    const containerWidth = container.offsetWidth;
+    const containerHeight = container.offsetHeight;
+
+    // Calculate center position
+    const top = (screenHeight - containerHeight) / 2;
+    const left = (screenWidth - containerWidth) / 2;
+
+    // Set the initial position
+    setPosition({ top, left });
+  }, []);
+
+  const handleMouseDown = (e) => {
+    const container = containerRef.current;
+    setIsDragging(true);
+    setOffset({
+      x: e.clientX - container.offsetLeft,
+      y: e.clientY - container.offsetTop,
+    });
+  };
+
+  const handleMouseMove = (e) => {
+    if (!isDragging) return;
+    setPosition({
+      top: e.clientY - offset.y,
+      left: e.clientX - offset.x,
+    });
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
@@ -30,7 +73,19 @@ function Login({ setIsLoggedIn, darkMode }) {
   
 
   return (
-    <div className={`sign-up-container mt-5 ${darkMode ? 'dark-mode' : ''}`}>
+    <div className={`sign-up-container mt-5 ${darkMode ? 'dark-mode' : ''}`}
+    ref={containerRef}
+      style={{
+        position: 'absolute',
+        top: `${position.top}px`,
+        left: `${position.left}px`,
+        cursor: isDragging ? 'grabbing' : 'grab',
+      }}
+      onMouseDown={handleMouseDown}
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
+      onMouseLeave={handleMouseUp}
+      >
       <h2 className="text-center mb-4">Login</h2>
       {errorMessage && <div className="alert alert-danger">{errorMessage}</div>}
       <form onSubmit={handleSubmit} className="p-4 border rounded shadow">

@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
-import yahooFinance from 'yahoo-finance2';
-//npm instal yahoo-finance2
+import axios from 'axios';
+import './Game.css';
+
+const ALPHA_VANTAGE_API_KEY = process.env.REACT_APP_ALPHA_VANTAGE_API_KEY;
 
 const Game = () => {
   const [startingCash, setStartingCash] = useState(0); 
@@ -8,46 +10,90 @@ const Game = () => {
   const [portfolio, setPortfolio] = useState([]);
   const [stockSymbol, setStockSymbol] = useState(''); 
   const [purchasePrice, setPurchasePrice] = useState(''); 
-  const [stockData, setStockData] = useState(null); // To store fetched stock data
+  const [quantity, setQuantity] = useState(1);  // New: to allow users to choose quantity
+  const [stockData, setStockData] = useState(null);
+  const [error, setError] = useState('');
 
   // Step 2: Handle starting cash selection
   const handleStartingCash = (cash) => {
+    console.log(`Starting cash set to: ${cash}`);
     setStartingCash(cash);
     setCashRemaining(cash); 
   };
 
-  // Step 3: Fetch stock data from Yahoo Finance
+  // Step 3: Fetch stock data from Alpha Vantage
   const fetchStockData = async (symbol) => {
+    if (!symbol) {
+      console.error('No stock symbol provided');
+      setError('Please enter a valid stock symbol.');
+      return;
+    }
+
     try {
-      const quote = await yahooFinance.quote(symbol);
-      setStockData(quote);
-      setPurchasePrice(quote.regularMarketPrice); // Automatically fill the current price
+      console.log(`Fetching data for symbol: ${symbol}`);
+      const response = await axios.get(`https://www.alphavantage.co/query`, {
+        params: {
+          function: 'GLOBAL_QUOTE',
+          symbol: symbol,
+          apikey: ALPHA_VANTAGE_API_KEY
+        }
+      });
+      
+      const quote = response.data['Global Quote'];
+      if (quote && quote['05. price']) {
+        const price = parseFloat(quote['05. price']);
+        setStockData({
+          regularMarketPrice: price,
+          symbol: symbol.toUpperCase(),
+        });
+        setPurchasePrice(price);
+        console.log(`Fetched price: ${price} for ${symbol}`);
+      } else {
+        console.error('No stock data found');
+        setError('Stock not found or unable to fetch data.');
+      }
     } catch (error) {
-      console.error("Error fetching stock data", error);
-      alert("Stock not found or unable to fetch data.");
+      console.error('Error fetching stock data', error);
+      setError('Error fetching stock data');
     }
   };
 
   // Step 4: Handle buying a stock
   const handleBuyStock = () => {
-    if (purchasePrice <= cashRemaining && stockSymbol) {
+    if (!purchasePrice || !stockSymbol) {
+      setError('Invalid stock symbol or price.');
+      return;
+    }
+
+    const totalCost = purchasePrice * quantity;
+    console.log(`Attempting to buy ${quantity} shares of ${stockSymbol} at $${purchasePrice} per share, total cost: $${totalCost}`);
+
+    if (totalCost <= cashRemaining) {
       const newStock = {
         symbol: stockSymbol.toUpperCase(),
         price: purchasePrice,
+        quantity: quantity,
+        totalCost: totalCost,
         time: new Date().toLocaleString(), 
       };
       setPortfolio([...portfolio, newStock]);
-      setCashRemaining(cashRemaining - purchasePrice); 
+      setCashRemaining(cashRemaining - totalCost); 
       setStockSymbol(''); 
-      setPurchasePrice(''); 
+      setPurchasePrice('');
+      setQuantity(1);
+      setError('');
+      console.log(`Bought ${quantity} shares of ${stockSymbol} for a total of $${totalCost}`);
     } else {
-      alert('Not enough cash to buy this stock or invalid stock symbol!');
+      console.error('Not enough cash to buy this stock');
+      setError('Not enough cash to buy this stock.');
     }
   };
 
   return (
     <div className="game-container">
       <h1 className="game-title">AI-Trader-Game</h1>
+
+      {error && <p style={{color: 'red'}}>{error}</p>} {/* Display errors if any */}
 
       <div className="starting-cash-selection">
         <h2>Select Starting Cash</h2>
@@ -80,6 +126,16 @@ const Game = () => {
           </div>
         )}
 
+        {/* New: Input for stock quantity */}
+        <input 
+          className="quantity-input" 
+          type="number" 
+          placeholder="Quantity" 
+          min="1"
+          value={quantity}
+          onChange={(e) => setQuantity(parseInt(e.target.value))}
+        />
+
         <button className="buy-button" onClick={handleBuyStock}>Buy Stock</button>
       </div>
 
@@ -91,7 +147,7 @@ const Game = () => {
           <ul className="portfolio-list">
             {portfolio.map((stock, index) => (
               <li key={index} className="portfolio-item">
-                {stock.symbol} - ${stock.price} (Bought on {stock.time})
+                {stock.quantity} shares of {stock.symbol} - ${stock.totalCost} (Bought on {stock.time})
               </li>
             ))}
           </ul>
@@ -102,39 +158,3 @@ const Game = () => {
 };
 
 export default Game;
-
-/*
-.game-container {
-  width: 80%;
-  margin: 0 auto;
-  font-family: Arial, sans-serif;
-}
-
-.game-title {
-  text-align: center;
-  margin-top: 20px;
-}
-
-.starting-cash-selection h2 {
-  margin-top: 20px;
-}
-
-.cash-options {
-  display: flex;
-  justify-content: space-around;
-  margin: 10px 0;
-}
-
-.cash-button {
-  padding: 10px 20px;
-  font-size: 16px;
-  cursor: pointer;
-  border: none;
-  background-color: #007bff;
-  color: white;
-  border-radius: 5px;
-}
-
-.cash-button:hover {
-  background-color:
-*/

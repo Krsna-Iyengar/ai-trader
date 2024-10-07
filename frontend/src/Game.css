@@ -1,0 +1,135 @@
+/* Scoped styles for the Game component */
+.game-container {
+    font-family: 'Roboto', sans-serif;
+    background: rgb(19, 30, 46); /* Darker background */
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    padding: 20px;
+    width: 400px;
+    box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.6); /* Stronger shadow for depth */
+    animation: fadeIn 1.2s ease;
+    color: #e0e0e0; /* Light text to contrast with dark background */
+    margin: 20px auto;
+    padding: 20px;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  .game-container h1 {
+    font-size: 24px;
+    text-align: center;
+    color: silver; /* Bright gold color for heading */
+    margin-bottom: 20px;
+    font-weight: bold;
+  }
+
+  .game-container h3 {
+    margin-top: 15px;
+  }
+  
+  .game-container button, .game-container input {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    font-size: 16px;
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3); /* Dark shadow for depth */
+    transition: all 0.3s ease;
+  }
+  
+  .game-container button {
+    background: linear-gradient(135deg, #1f4037, #99f2c8); /* Cool dark green gradient */
+    color: white;
+    cursor: pointer;
+  }
+  
+  .game-container button:hover {
+    background: linear-gradient(135deg, #28a745, #72cabe); /* Lighter green on hover */
+    transform: translateY(-3px);
+  }
+  
+  .game-container input {
+    background: rgba(40, 40, 40, 0.9); /* Darker input background */
+    color: #e0e0e0;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+  
+  .game-container input::placeholder {
+    color: rgba(255, 255, 255, 0.6); /* Lighter placeholder text */
+  }
+  
+  .game-container .cash-options {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .game-container .cash-button {
+    background: linear-gradient(135deg, #0f990b, #679e3a); /* Bright red/pink gradient */
+    color: white;
+    cursor: pointer;
+    flex: 1;
+    margin: 0 5px;
+  }
+  
+  .game-container .cash-button:hover {
+    background: linear-gradient(135deg, #67e41f, #86c76c);
+    transform: translateY(-3px);
+  }
+  
+  .game-container .stock-info, .game-container .portfolio-item {
+    background: rgba(30, 30, 30, 0.9); /* Dark background for info blocks */
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 8px;
+    color: #f8f8f8; /* Ensure text is visible */
+  }
+  
+  .game-container .portfolio-item {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .game-container .gpt-response {
+    background: rgba(30, 30, 30, 0.9); /* Same dark background for GPT response */
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #ffcc00; /* Gold text for emphasis */
+    animation: fadeIn 0.5s ease;
+  }
+  
+  .game-container h2 {
+    font-size: 20px;
+    margin-bottom: 10px;
+    color: #ffcc00; /* Consistent gold color for all headings */
+  }
+  
+  .game-container .cash-amount, .game-container .stock-amount {
+    color: #ffcc00; /* Highlight important numbers in gold */
+    font-weight: bold;
+  }
+  
+  .game-container .portfolio-section {
+    margin-top: 20px;
+  }
+  
+  .game-container .buy-button, .game-container .fetch-button {
+    background: linear-gradient(135deg, #0072ff, #00c6ff); /* Cool blue gradient */
+    color: white;
+  }
+  
+  .game-container .buy-button:hover, .game-container .fetch-button:hover {
+    background: linear-gradient(135deg, #0099ff, #00d4ff); /* Lighter blue on hover */
+    transform: translateY(-3px);
+  }
+  
+  .game-container .buy-button:disabled, .game-container .fetch-button:disabled {
+    background: gray;
+    cursor: not-allowed;
+  }
+  

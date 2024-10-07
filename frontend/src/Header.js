@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import logo from './assets/ai-trader.jpg';
 import { Dropdown } from 'react-bootstrap';
+import './Header.css';
 
 function Header({ darkMode, toggleDarkMode, isLoggedIn, handleLogout }) {
   return (
@@ -32,6 +33,8 @@ function Header({ darkMode, toggleDarkMode, isLoggedIn, handleLogout }) {
                 <Dropdown.Menu>
                   <Dropdown.Item as={Link} to="/dashboard">Dashboard</Dropdown.Item>
                   <Dropdown.Item as={Link} to="/account">Account</Dropdown.Item>
+                  <Dropdown.Item as={Link} to="/advisor">Advisor</Dropdown.Item>
+                  <Dropdown.Item as={Link} to="/game">Game</Dropdown.Item>
                 </Dropdown.Menu>
               </Dropdown>
 

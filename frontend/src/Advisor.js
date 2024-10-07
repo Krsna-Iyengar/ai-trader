@@ -1,80 +1,199 @@
-import React, { useState } from 'react';
-import yahooFinance from 'yahoo-finance2';
-import { Configuration, OpenAIApi } from "openai";
+import React, { useState, useCallback, useRef, useEffect } from 'react';
+import { OpenAI } from 'openai'; // Import OpenAI correctly
+import './Advisor.css'
 
-// Initialize OpenAI GPT API
-const configuration = new Configuration({
-  apiKey: process.env.REACT_APP_OPENAI_API_KEY, // Your GPT API key here
+const openai = new OpenAI({
+  apiKey: process.env.REACT_APP_OPENAI_API_KEY,
+  dangerouslyAllowBrowser: true,
 });
-const openai = new OpenAIApi(configuration);
 
-const Advisor = () => {
+const Advisor = ({ darkMode }) => {
+  const [isDragging, setIsDragging] = useState(false);
+  const containerRef = useRef(null);
+  const [position, setPosition] = useState({ top: 0, left: 0 });
+  const [offset, setOffset] = useState({ x: 0, y: 0 });
+
+  // Center the container on the screen when it first loads
+  useEffect(() => {
+    const container = containerRef.current;
+    const screenWidth = window.innerWidth;
+    const screenHeight = window.innerHeight;
+
+    const containerWidth = container.offsetWidth;
+    const containerHeight = container.offsetHeight;
+
+    // Calculate center position
+    const top = (screenHeight - containerHeight) / 2;
+    const left = (screenWidth - containerWidth) / 2;
+
+    // Set the initial position
+    setPosition({ top, left });
+  }, []);
+
+  const handleMouseDown = (e) => {
+    const container = containerRef.current;
+    setIsDragging(true);
+    setOffset({
+      x: e.clientX - container.offsetLeft,
+      y: e.clientY - container.offsetTop,
+    });
+  };
+
+  const handleMouseMove = (e) => {
+    if (!isDragging) return;
+    setPosition({
+      top: e.clientY - offset.y,
+      left: e.clientX - offset.x,
+    });
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
   const [userQuery, setUserQuery] = useState('');
   const [stockData, setStockData] = useState(null);
   const [gptResponse, setGptResponse] = useState('');
+  const [isSearching, setIsSearching] = useState(false); // Track if a request is in progress
+  const [realTimePrice, setRealTimePrice] = useState(null); // For real-time price from Alpha Vantage
+  const [generalResponse, setGeneralResponse] = useState(''); // For general financial answers
 
-  // Step 1: Use GPT to interpret the user query
+  // Debounce function to limit rapid firing of requests
+  const debounce = (func, delay) => {
+    let timeoutId;
+    return (...args) => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => func(...args), delay);
+    };
+  };
+
+  // Use GPT to interpret the user query
   const interpretQuery = async (query) => {
     try {
-      const gptResult = await openai.createCompletion({
-        model: "text-davinci-003",
-        prompt: `Extract key stock-related information from the following query: "${query}"`,
+      console.log("User query:", query);
+  
+      const gptResult = await openai.chat.completions.create({
+        model: "gpt-3.5-turbo",
+        messages: [
+          { role: "system", content: "You are a helpful assistant that provides stock information." },
+          { role: "user", content: `Please provide the stock symbol for the following company query: "${query}".` }
+        ],
         max_tokens: 50,
       });
-
-      const responseText = gptResult.data.choices[0].text.trim();
+  
+      console.log("GPT response:", gptResult);
+  
+      const responseText = gptResult.choices[0].message.content.trim();
       setGptResponse(responseText);
-
-      // Extract relevant stock symbol or info from GPT response
+  
       const stockSymbol = extractStockSymbol(responseText);
-      
+      console.log(`Extracted stock symbol: ${stockSymbol}`); // Log extracted stock symbol
+  
       if (stockSymbol) {
-        fetchStockData(stockSymbol);
+        await fetchStockData(stockSymbol); // Call fetchStockData only if a stock symbol is extracted
       } else {
         alert("Sorry, I couldn't find the stock you were looking for.");
       }
-
     } catch (error) {
       console.error("Error interpreting query:", error);
+    } finally {
+      setIsSearching(false); // Re-enable the search button after request
     }
   };
+  
 
-  // Helper function to extract stock symbols
+  // Helper function to determine if the query is stock-related
+  const isStockRelated = (query) => {
+    const stockKeywords = ["price", "stock", "symbol", "market"];
+    return stockKeywords.some((keyword) => query.toLowerCase().includes(keyword));
+  };
+
+  // Helper function to extract stock symbols from GPT's response
   const extractStockSymbol = (responseText) => {
-    const match = responseText.match(/\b[A-Z]{2,4}\b/); 
+    console.log("GPT Response Text for Symbol Extraction:", responseText); // Debugging log
+  
+    // More robust regex to extract stock symbols
+    const match = responseText.match(/\b[A-Z]{1,5}\b/); // Match stock symbols (usually 1-5 uppercase letters)
     return match ? match[0] : null;
   };
+  
 
-  // Fetch stock data from Yahoo Finance
+  // Fetch real-time stock data from Alpha Vantage
   const fetchStockData = async (symbol) => {
+    console.log(`Fetching real-time data for stock symbol: ${symbol}`); // Log when fetchStockData is called
+  
+    const url = `http://localhost:5000/api/stock/${symbol}`; // Your backend proxy route
+  
     try {
-      const quote = await yahooFinance.quote(symbol);
-      setStockData(quote);
+      const response = await fetch(url);
+      const data = await response.json();
+  
+      console.log("Fetched Stock Data:", data); // Log the data for debugging
+  
+      if (data && data.symbol) {
+        setRealTimePrice(data.price); // Set the real-time price
+        setStockData({
+          regularMarketPrice: data.price,
+          symbol: data.symbol,
+          volume: data.volume,
+          open: data.open,
+          high: data.high,
+          low: data.low,
+          previousClose: data.previousClose,
+          change: data.change,
+          changePercent: data.changePercent,
+        });
+      } else {
+        alert("Stock not found or invalid response from the API.");
+      }
     } catch (error) {
-      console.error("Error fetching stock data:", error);
+      console.error("Error fetching stock data:", error.message);
+      alert("Failed to fetch real-time stock data.");
     }
   };
+  
 
   // Handle user query input and submission
-  const handleSearch = () => {
-    interpretQuery(userQuery);
-  };
+  const handleSearch = useCallback(
+    debounce(() => {
+      if (!isSearching && userQuery) {
+        setIsSearching(true); // Disable search button
+        interpretQuery(userQuery);
+      }
+    }, 1000), // Debounce delay set to 1 second
+    [userQuery, isSearching]
+  );
 
   return (
-    <div className="advisor-container">
+    <div
+      className={`advisor-container ${darkMode ? 'dark-mode' : ''}`}
+      ref={containerRef}
+      style={{
+        position: 'absolute',
+        top: `${position.top}px`,
+        left: `${position.left}px`,
+        cursor: isDragging ? 'grabbing' : 'grab',
+      }}
+      onMouseDown={handleMouseDown}
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
+      onMouseLeave={handleMouseUp}
+    >
       <h1 className="advisor-title">AI Trading Advisor</h1>
 
       {/* User Input for Natural Language Query */}
       <input
         type="text"
-        placeholder="Ask about a stock (e.g., 'What is the current price of Apple?')"
+        placeholder="Ask about a stock or general finance (e.g., 'What is arbitrage?')"
         value={userQuery}
         onChange={(e) => setUserQuery(e.target.value)}
         className="query-input"
       />
-      <button onClick={handleSearch} className="search-button">Search</button>
+      <button onClick={handleSearch} className="search-button" disabled={isSearching || !userQuery}>
+        {isSearching ? 'Searching...' : 'Search'}
+      </button>
 
-      {/* Display GPT Response */}
+      {/* Display GPT Interpretation */}
       {gptResponse && (
         <div className="gpt-response">
           <h3>GPT Interpretation:</h3>
@@ -82,12 +201,25 @@ const Advisor = () => {
         </div>
       )}
 
-      {/* Display Stock Data */}
+      {/* Display Real-Time Stock Data */}
       {stockData && (
         <div className="stock-info">
           <h3>{stockData.symbol}</h3>
-          <p>Current Price: ${stockData.regularMarketPrice}</p>
-          <p>Sector: {stockData.quoteType}</p>
+          <p>Real-Time Price: ${realTimePrice}</p>
+          <p>Volume: {stockData.volume}</p>
+          <p>Open: ${stockData.open}</p>
+          <p>High: ${stockData.high}</p>
+          <p>Low: ${stockData.low}</p>
+          <p>Previous Close: ${stockData.previousClose}</p>
+          <p>Change: {stockData.change} ({stockData.changePercent})</p>
+        </div>
+      )}
+
+      {/* Display General Financial Answer */}
+      {generalResponse && (
+        <div className="general-response">
+          <h3>Finance Answer:</h3>
+          <p>{generalResponse}</p>
         </div>
       )}
     </div>
@@ -95,76 +227,3 @@ const Advisor = () => {
 };
 
 export default Advisor;
-
-/*
-.advisor-container {
-  max-width: 600px;
-  margin: 50px auto;
-  padding: 20px;
-  border: 1px solid #ccc;
-  border-radius: 10px;
-  background-color: #f9f9f9;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.advisor-title {
-  text-align: center;
-  font-size: 24px;
-  color: #333;
-  margin-bottom: 20px;
-}
-
-.query-input {
-  width: 100%;
-  padding: 10px;
-  font-size: 16px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  margin-bottom: 20px;
-}
-
-.search-button {
-  display: block;
-  width: 100%;
-  padding: 10px;
-  font-size: 16px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.search-button:hover {
-  background-color: #0056b3;
-}
-
-.gpt-response {
-  margin-top: 20px;
-}
-
-.gpt-response h3 {
-  margin-bottom: 10px;
-  font-size: 18px;
-  color: #333;
-}
-
-.stock-info {
-  margin-top: 20px;
-  background-color: #e6f7ff;
-  padding: 15px;
-  border-radius: 5px;
-}
-
-.stock-info h3 {
-  margin-bottom: 10px;
-  font-size: 18px;
-  color: #333;
-}
-
-.stock-info p {
-  margin: 0;
-  font-size: 16px;
-  color: #555;
-}
-*/
