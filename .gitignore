@@ -1,3 +1,5 @@
 node_modules
 .env
 dotenv.env
+# Local Netlify folder
+.netlify
