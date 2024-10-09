@@ -52,7 +52,7 @@ function App() {
           <section className={`hero-section d-flex align-items-center justify-content-center text-center ${darkMode ? 'dark-mode' : ''}`}>
             <div>
               <h1>Welcome to AI Trader</h1>
-              <p>Your gateway to AI-driven market insights and trading strategies.</p>
+              <p>Your gateway to AI-driven market insights and trading strategies. </p>
             </div>
           </section>
 
