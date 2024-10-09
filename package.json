@@ -5,12 +5,12 @@
   "description": "AI Trader Fullstack Application",
   "main": "backend/server.js",
   "scripts": {
-    "server": "node backend/server.js",
-    "client": "npm start --prefix frontend",
-    "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "build": "react-scripts build",
-    "start": "node server.js",
-    "heroku-postbuild": "npm run build",
+    "server": "node backend/server.js",               
+    "client": "npm start --prefix frontend",          
+    "dev": "concurrently \"npm run server\" \"npm run client\"",  
+    "build": "npm run build --prefix frontend",       
+    "start": "node backend/server.js",                
+    "heroku-postbuild": "npm run build",             
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
@@ -43,7 +43,8 @@
     "yahoo-finance2": "^2.13.2"
   },
   "devDependencies": {
-    "@babel/plugin-proposal-private-property-in-object": "^7.21.11"
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "concurrently": "^7.2.0"
   },
   "eslintConfig": {
     "extends": [
