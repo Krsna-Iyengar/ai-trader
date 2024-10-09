@@ -1,55 +1,9 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';  // Import Axios for HTTP requests
 import './SignUp.css';
 
 function SignUp({ darkMode }) {
-  const [isDragging, setIsDragging] = useState(false);
-  const containerRef = useRef(null);
-  const [position, setPosition] = useState({ top: 0, left: 0 });
-  const [offset, setOffset] = useState({ x: 0, y: 0 });
-
-  // Center the container on the screen when it first loads
- /* useEffect(() => {
-    const container = containerRef.current;
-    const screenWidth = window.innerWidth;
-    const screenHeight = window.innerHeight;
-
-    const containerWidth = container.offsetWidth;
-    const containerHeight = container.offsetHeight;
-
-    // Calculate center position
-    const top = (screenHeight - containerHeight) / 2;
-    const left = (screenWidth - containerWidth) / 2;
-
-    // Set the initial position
-    setPosition({ top, left });
-  }, []);
-
-  const handleMouseDown = (e) => {
-    const container = containerRef.current;
-    setIsDragging(true);
-    setOffset({
-      x: e.clientX - container.offsetLeft,
-      y: e.clientY - container.offsetTop,
-    });
-  };
-
-  const handleMouseMove = (e) => {
-    if (!isDragging) return;
-    setPosition({
-      top: e.clientY - offset.y,
-      left: e.clientX - offset.x,
-    });
-  };
-
-  const handleMouseUp = () => {
-    setIsDragging(false);
-  };
-  
-    const navigate = useNavigate();  // Initialize the navigate function
-    const [successMessage, setSuccessMessage] = useState('');
-
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -58,11 +12,15 @@ function SignUp({ darkMode }) {
   });
 
   const [errors, setErrors] = useState({
-    nameInvalid: false,     // Add error state for name
+    nameInvalid: false,
     emailInvalid: false,
     passwordMismatch: false,
     invalidPassword: false,
   });
+
+  const [successMessage, setSuccessMessage] = useState('');
+
+  const navigate = useNavigate();  // Initialize the navigate function
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -76,8 +34,7 @@ function SignUp({ darkMode }) {
   const validateEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
-  };*/
-
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -135,27 +92,12 @@ function SignUp({ darkMode }) {
       console.error('Error during sign-up:', error.response?.data?.message || error.message);
     }
   };
-  
-  
 
   return (
-    <div className={`sign-up-container mt-5 ${darkMode ? 'dark-mode' : ''}` }
-      /*ref={containerRef}
-      style={{
-        position: 'absolute',
-        top: `${position.top}px`,
-        left: `${position.left}px`,
-        cursor: isDragging ? 'grabbing' : 'grab',
-      }}
-      onMouseDown={handleMouseDown}
-      onMouseMove={handleMouseMove}
-      onMouseUp={handleMouseUp}
-      onMouseLeave={handleMouseUp}*/
-    >
+    <div className={`sign-up-container mt-5 ${darkMode ? 'dark-mode' : ''}`}>
       <h2 className="text-center mb-4">Create Your Account</h2>
       {successMessage && <div className="alert alert-success">{successMessage}</div>}
       <form onSubmit={handleSubmit} className="p-4 border rounded shadow">
-        {/* Name field */}
         <div className="form-group mb-3">
           <label>Name</label>
           <input
@@ -169,7 +111,6 @@ function SignUp({ darkMode }) {
           />
         </div>
         
-        {/* Email field */}
         <div className="form-group mb-3">
           <label>Email</label>
           <input
@@ -186,7 +127,6 @@ function SignUp({ darkMode }) {
           )}
         </div>
 
-        {/* Password field */}
         <div className="form-group mb-3">
           <label>Password</label>
           <input
@@ -205,7 +145,6 @@ function SignUp({ darkMode }) {
           )}
         </div>
 
-        {/* Confirm password field */}
         <div className="form-group mb-4">
           <label>Confirm Password</label>
           <input
