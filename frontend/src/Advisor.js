@@ -8,7 +8,7 @@ const openai = new OpenAI({
 
 });
 
-console.log('OpenAI API Key: ', process.env.REACT_APP_OPENAI_API_KEY);
+console.log('OpenAI API Key : ', process.env.REACT_APP_OPENAI_API_KEY);
 
 const Advisor = ({ darkMode }) => {
   const [isDragging, setIsDragging] = useState(false);
