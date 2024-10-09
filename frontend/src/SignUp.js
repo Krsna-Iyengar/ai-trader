@@ -1,12 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';  // Import Axios for HTTP requests
 import './SignUp.css';
-
-  
-
-  const auth = getAuth(app);
 
 function SignUp({ darkMode }) {
   const [isDragging, setIsDragging] = useState(false);
@@ -86,13 +81,6 @@ function SignUp({ darkMode }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    createUserWithEmailAndPassword(auth, formData.email, formData.password)
-      .then((userCredential) => {
-        console.log('User created:', userCredential);
-      })
-      .catch((error) => {
-        console.error('Error:', error);
-      });
   
     const { name, email, password, confirmPassword } = formData;
   
@@ -147,6 +135,7 @@ function SignUp({ darkMode }) {
       console.error('Error during sign-up:', error.response?.data?.message || error.message);
     }
   };
+  
   
 
   return (
