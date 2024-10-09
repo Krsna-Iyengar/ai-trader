@@ -9,8 +9,8 @@ function Login({ setIsLoggedIn, darkMode }) {
   const [offset, setOffset] = useState({ x: 0, y: 0 });
 
   // Center the container on the screen when it first loads
-  useEffect(() => {
-    const container = containerRef.current;
+  //useEffect(() => {
+    /*const container = containerRef.current;
     const screenWidth = window.innerWidth;
     const screenHeight = window.innerHeight;
 
@@ -44,7 +44,7 @@ function Login({ setIsLoggedIn, darkMode }) {
 
   const handleMouseUp = () => {
     setIsDragging(false);
-  };
+  };*/
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -54,19 +54,23 @@ function Login({ setIsLoggedIn, darkMode }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:5000/api/login', {
+      // Replace the localhost URL with the Heroku backend URL
+      const response = await axios.post('https://my-ai-trader-api-3d8e6f662cb5.herokuapp.com/api/login', {
         email,
         password,
       });
   
       if (response.data) {
         const { token, user } = response.data;
+        // Store token and user data in localStorage
         localStorage.setItem('token', token);
         localStorage.setItem('userData', JSON.stringify(user));
         setIsLoggedIn(true);
+        // Redirect to the dashboard after successful login
         navigate('/dashboard');
       }
     } catch (error) {
+      // Handle error and display the message
       setErrorMessage(error.response?.data?.message || 'Login failed');
     }
   };
@@ -74,7 +78,7 @@ function Login({ setIsLoggedIn, darkMode }) {
 
   return (
     <div className={`sign-up-container mt-5 ${darkMode ? 'dark-mode' : ''}`}
-    ref={containerRef}
+    /*ref={containerRef}
       style={{
         position: 'absolute',
         top: `${position.top}px`,
@@ -85,7 +89,7 @@ function Login({ setIsLoggedIn, darkMode }) {
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
-      >
+      */>
       <h2 className="text-center mb-4">Login</h2>
       {errorMessage && <div className="alert alert-danger">{errorMessage}</div>}
       <form onSubmit={handleSubmit} className="p-4 border rounded shadow">

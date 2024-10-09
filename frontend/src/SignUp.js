@@ -26,7 +26,7 @@ function SignUp({ darkMode }) {
   const [offset, setOffset] = useState({ x: 0, y: 0 });
 
   // Center the container on the screen when it first loads
-  useEffect(() => {
+ /* useEffect(() => {
     const container = containerRef.current;
     const screenWidth = window.innerWidth;
     const screenHeight = window.innerHeight;
@@ -92,10 +92,10 @@ function SignUp({ darkMode }) {
   const validateEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
-  };
+  };*/
 
 
-const handleSubmit = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     createUserWithEmailAndPassword(auth, formData.email, formData.password)
       .then((userCredential) => {
@@ -104,64 +104,65 @@ const handleSubmit = async (e) => {
       .catch((error) => {
         console.error('Error:', error);
       });
-      const { name, email, password, confirmPassword } = formData;
-
+  
+    const { name, email, password, confirmPassword } = formData;
+  
     // Reset errors
     setErrors({
-        nameInvalid: false,
-        emailInvalid: false,
-        passwordMismatch: false,
-        invalidPassword: false,
+      nameInvalid: false,
+      emailInvalid: false,
+      passwordMismatch: false,
+      invalidPassword: false,
     });
-
+  
     // Check if name is valid (non-empty)
     if (name.trim() === '') {
-            setErrors((prevErrors) => ({ ...prevErrors, nameInvalid: true }));
-            return;
-          }
-      
+      setErrors((prevErrors) => ({ ...prevErrors, nameInvalid: true }));
+      return;
+    }
+  
     // Check if the email is valid
     if (!validateEmail(email)) {
-        setErrors((prevErrors) => ({ ...prevErrors, emailInvalid: true }));
-        return;
-      }
+      setErrors((prevErrors) => ({ ...prevErrors, emailInvalid: true }));
+      return;
+    }
   
-
     // Check if passwords match
     if (password !== confirmPassword) {
       setErrors((prevErrors) => ({ ...prevErrors, passwordMismatch: true }));
       return;
     }
-
+  
     // Check if password meets the criteria
     if (!validatePassword(password)) {
       setErrors((prevErrors) => ({ ...prevErrors, invalidPassword: true }));
       return;
     }
-
-     // Send the data to the backend API
-     try {
-        const response = await axios.post('http://localhost:5000/api/signup', {
-          name,
-          email,
-          password,
-        });
   
-          // Check if response and response.data exist
-          if (response.status === 201) {
-            setSuccessMessage('Sign-up successful! Redirecting to login...');
-            setTimeout(() => {
-              navigate('/login'); // Redirect to the login page after 2 seconds
-            }, 2000);
-          }
-        } catch (error) {
-          console.error('Error during sign-up:', error.response?.data?.message || error.message);
-        }
-      };
+    // Send the data to the backend API
+    try {
+      const response = await axios.post('https://my-ai-trader-api-3d8e6f662cb5.herokuapp.com/api/signup', {
+        name,
+        email,
+        password,
+      });
+  
+      // Check if response and response.data exist
+      if (response.status === 201) {
+        setSuccessMessage('Sign-up successful! Redirecting to login...');
+        setTimeout(() => {
+          navigate('/login'); // Redirect to the login page after 2 seconds
+        }, 2000);
+      }
+    } catch (error) {
+      console.error('Error during sign-up:', error.response?.data?.message || error.message);
+    }
+  };
+  
 
   return (
     <div className={`sign-up-container mt-5 ${darkMode ? 'dark-mode' : ''}` }
-      ref={containerRef}
+      /*ref={containerRef}
       style={{
         position: 'absolute',
         top: `${position.top}px`,
@@ -171,7 +172,7 @@ const handleSubmit = async (e) => {
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
-      onMouseLeave={handleMouseUp}
+      onMouseLeave={handleMouseUp}*/
     >
       <h2 className="text-center mb-4">Create Your Account</h2>
       {successMessage && <div className="alert alert-success">{successMessage}</div>}

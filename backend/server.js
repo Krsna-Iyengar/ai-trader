@@ -22,9 +22,13 @@ app.use(express.json());
 
 // Allow requests from frontend origin (http://localhost:3000)
 app.use(cors({
-  origin: 'http://localhost:3000',
-  credentials: true, // Include credentials if needed, such as cookies or Authorization headers
+  origin: [
+    'http://localhost:3000',  // Allow localhost for development
+    'https://your-heroku-app-name.herokuapp.com'  // Replace with your actual Heroku frontend URL
+  ],
+  credentials: true,
 }));
+
 
 // Route to fetch stock data from Alpha Vantage
 app.get('/api/stock/:symbol', async (req, res) => {
