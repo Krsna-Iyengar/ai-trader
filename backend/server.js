@@ -24,7 +24,7 @@ app.use(express.json());
 app.use(cors({
   origin: [
     'http://localhost:3000',  // Allow localhost for development
-    'https://your-heroku-app-name.herokuapp.com'  // Replace with your actual Heroku frontend URL
+    'ai-trader.in'  // Replace with your actual Heroku frontend URL
   ],
   credentials: true,
 }));
