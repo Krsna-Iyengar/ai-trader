@@ -4,8 +4,10 @@ import './Advisor.css'
 
 const openai = new OpenAI({
   apiKey: process.env.REACT_APP_OPENAI_API_KEY,
-  dangerouslyAllowBrowser: true,
+
 });
+
+console.log('OpenAI API Key:', process.env.REACT_APP_OPENAI_API_KEY);
 
 const Advisor = ({ darkMode }) => {
   const [isDragging, setIsDragging] = useState(false);
