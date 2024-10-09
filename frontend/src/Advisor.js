@@ -12,7 +12,7 @@ const Advisor = ({ darkMode }) => {
   const containerRef = useRef(null);
   const [position, setPosition] = useState({ top: 0, left: 0 });
   const [offset, setOffset] = useState({ x: 0, y: 0 });
-
+/*
   // Center the container on the screen when it first loads
   useEffect(() => {
     const container = containerRef.current;
@@ -49,7 +49,7 @@ const Advisor = ({ darkMode }) => {
 
   const handleMouseUp = () => {
     setIsDragging(false);
-  };
+  };*/
 
   const [userQuery, setUserQuery] = useState('');
   const [stockData, setStockData] = useState(null);
@@ -166,7 +166,7 @@ const Advisor = ({ darkMode }) => {
 
   return (
     <div
-      className={`advisor-container ${darkMode ? 'dark-mode' : ''}`}
+      /*className={`advisor-container ${darkMode ? 'dark-mode' : ''}`}
       ref={containerRef}
       style={{
         position: 'absolute',
@@ -177,7 +177,7 @@ const Advisor = ({ darkMode }) => {
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
-      onMouseLeave={handleMouseUp}
+      onMouseLeave={handleMouseUp}*/
     >
       <h1 className="advisor-title">AI Trading Advisor</h1>
 
