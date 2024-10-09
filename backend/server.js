@@ -31,14 +31,11 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use(express.json());
 
 // Allow requests from frontend origin (http://localhost:3000)
+const cors = require('cors');
 app.use(cors({
-  origin: [
-    'http://localhost:3000',  // Allow localhost for development
-    'ai-trader.in'  // Replace with your actual Heroku frontend URL
-  ],
+  origin: ['http://localhost:3000', 'https://ai-trader-in.herokuapp.com'],
   credentials: true,
 }));
-
 
 // Route to fetch stock data from Alpha Vantage
 app.get('/api/stock/:symbol', async (req, res) => {
