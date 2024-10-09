@@ -13,6 +13,16 @@ const { Pool } = require('pg');  // Import the PostgreSQL client
 
 console.log(typeof process.env.DB_PASSWORD); // Should be 'string'
 
+const express = require('express');
+
+
+// Serve static files from the React frontend app
+app.use(express.static(path.join(__dirname, '../frontend/build')));
+
+// Anything that doesn't match an API route should serve the frontend app
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/build', 'index.html'));
+});
 
 // Serve static files from the 'uploads' directory
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));

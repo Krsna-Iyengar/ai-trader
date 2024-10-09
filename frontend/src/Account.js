@@ -125,7 +125,7 @@ function Account({ darkMode }) {
       formData.append('profile_pic', selectedFile);
 
       try {
-        const response = await fetch('https://ai-trader-in-api/api/users/me/profile-pic', {
+        const response = await fetch('/api/users/me/profile-pic', {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -135,7 +135,7 @@ function Account({ darkMode }) {
 
         if (response.ok) {
           const data = await response.json();
-          profilePicPath = `https://ai-trader-in-api${data.profile_pic}`;
+          profilePicPath = `${data.profile_pic}`;
           console.log('Profile picture uploaded:', data);  // Debugging log
         } else {
           console.error('Failed to upload profile picture:', response.status);
@@ -151,7 +151,7 @@ function Account({ darkMode }) {
     };
 
     try {
-      const response = await fetch('https://ai-trader-in-api/api/users/me', {
+      const response = await fetch('/api/users/me', {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
