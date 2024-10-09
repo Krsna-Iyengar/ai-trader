@@ -125,7 +125,7 @@ const Advisor = ({ darkMode }) => {
   const fetchStockData = async (symbol) => {
     console.log(`Fetching real-time data for stock symbol: ${symbol}`); // Log when fetchStockData is called
   
-    const url = `http://localhost:5000/api/stock/${symbol}`; // Your backend proxy route
+    const url = `https://ai-trader-in-api.herokuapp.com/api/stock/${symbol}`; // Your backend proxy route
   
     try {
       const response = await fetch(url);

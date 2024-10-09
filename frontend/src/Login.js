@@ -55,7 +55,7 @@ function Login({ setIsLoggedIn, darkMode }) {
     e.preventDefault();
     try {
       // Replace the localhost URL with the Heroku backend URL
-      const response = await axios.post('https://my-ai-trader-api-3d8e6f662cb5.herokuapp.com/api/login', {
+      const response = await axios.post('https://ai-trader-in-api.herokuapp.com/api/login', {
         email,
         password,
       });

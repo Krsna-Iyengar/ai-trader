@@ -75,7 +75,7 @@ function SignUp({ darkMode }) {
   
     // Send the data to the backend API
     try {
-      const response = await axios.post('https://my-ai-trader-api-3d8e6f662cb5.herokuapp.com/api/signup', {
+      const response = await axios.post('https://ai-trader-in-api.herokuapp.com/api/signup', {
         name,
         email,
         password,
